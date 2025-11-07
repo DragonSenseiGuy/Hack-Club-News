@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Smart RSS</title>
+    {% if current_theme == "Custom" %}
+    <style>
+        .custom-theme #center-div {
+            background-color: {{ custom_theme.background_color }};
+            color: {{ custom_theme.text_color }};
+        }
+        .custom-theme #nav-bar {
+            background-color: {{ custom_theme.nav_bar_color }};
+        }
+        .custom-theme .nav-bar-links {
+            color: {{ custom_theme.nav_bar_links_color }};
+            text-decoration: none;
+        }
+        .custom-theme .homepage-links {
+            color: {{ custom_theme.homepage_links_color }};
+        }
+        .custom-theme .nav-bar-links:visited {
+            color: {{ custom_theme.nav_bar_link_color }};
+        }
+    </style>
+    {% endif %}
+</head>
+<body {% if current_theme == "Custom" %}class="custom-theme"{% endif %}>
+    <div>
+        <div id="center-div">
+            {% include 'nav.html' %}
+            <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
+                Add your RSS feeds individually:
+                <br />
+                <form action="/add_feed" method="post">
+                    <input name="feed_url">
+                    <button>Add</button>
+                    {% if request.args.get('success') %}
+                      <p style="color: grey;">Sucessfully added feed!</p>
+                    {% endif %}
+                </form>
+                <br />
+                <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
+                Remove your RSS feeds individually:
+                <br />
+                <form action="/remove_feed" method="post">
+                    <input name="feed_url">
+                    <button>Remove</button>
+                    {% if request.args.get('success') %}
+                      <p style="color: grey;">Sucessfully removed feed!</p>
+                    {% endif %}
+                </form>
+                <br />
+                Themes:
+                <form action="/change_theme" method="post">
+                    <input type="radio" id="default" name="theme" value="Hacker News" {% if current_theme == "Hacker News" %}checked{% endif %}>
+                    <label for="default">Hacker News</label><br>
+                    <button type="submit">Apply Theme</button>
+                </form>
+                <p style="color: grey;">To add more themes, you'll need to create new CSS files in the `/static/` directory and then add them as options above, linking to their respective CSS files.</p>
+                <br />
+                <a href="/custom_theme">Create a Custom Theme</a>
+                <br />
+                <br />
+                <form action="/clear_custom_theme" method="post">
+                    <button type="submit">Clear Custom Theme</button>
+                </form>
+                <br />
+                <form action="{{ url_for('export_json') }}" method="GET">
+                    <input type="submit" value="Export to JSON">
+                </form>
+                <p>Import Data(Json Format):</p>
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <input type="file" accept=".json" name="file">
+                    <input type="submit" value="Upload" />
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

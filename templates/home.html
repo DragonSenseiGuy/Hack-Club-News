@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Smart RSS</title>
+    {% if current_theme == "Custom" %}
+    <style>
+        .custom-theme #center-div {
+            background-color: {{ custom_theme.background_color }};
+            color: {{ custom_theme.text_color }}
+        }
+        .custom-theme #nav-bar {
+            background-color: {{ custom_theme.nav_bar_color }};
+        }
+        .custom-theme .nav-bar-links {
+            color: {{ custom_theme.nav_bar_links_color }};
+            text-decoration: none;
+        }
+        .custom-theme .homepage-links {
+            color: {{ custom_theme.homepage_links_color }};
+        }
+        .custom-theme .nav-bar-links:visited {
+            color: {{ custom_theme.nav_bar_link_color }};
+        }
+        .custom-theme .homepage-links:visited {
+            color: {{ custom_theme.visited_homepage_links_color }};
+        }
+    </style>
+    {% endif %}
+</head>
+<body {% if current_theme == "Custom" %}class="custom-theme"{% endif %}>
+    <div>
+        <div id="center-div">
+            {% include 'nav.html' %}
+            <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
+                {% for item in items %}
+                    <div style="padding:5px"><a class="homepage-links" href="/blog/{{ loop.index0 }}">{{ item["title"] }}</a> (<a class="homepage-links" href={{ item["url"] }}>{{ item["url"].split('/')[2] }}</a>)</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+.homepage-links {
+    color: black;
+    text-decoration: none;
+}
+
+.homepage-links:visited {
+    color: grey;
+    text-decoration: none;
+}
+
+#center-div {
+    width: 80%;
+    margin: 20px auto 0 auto;
+    background-color: #f6f6ef;
+    padding-top: 0px;
+}
+
+body {
+    font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+blockquote {
+    margin: 1em 0;
+    border-left: 0.75em solid #e0e0da;
+    padding-left: 0.75em;
+}
+
+pre {
+    background-color: #e0e0da;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+img {
+    max-width: 100%;
+}
+
+#nav-bar {
+    background-color: #ff6600;
+    padding: 1px;
+}
+
+.nav-bar-links {
+    color: black;
+    text-decoration: none;
+}
+
+a {
+    color: black;
+}

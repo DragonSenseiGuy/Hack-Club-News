@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Smart RSS</title>
+    {% if current_theme == "Custom" %}
+    <style>
+        .custom-theme #center-div {
+            background-color: {{ custom_theme.background_color }};
+            color: {{ custom_theme.text_color }};
+        }
+        .custom-theme #nav-bar {
+            background-color: {{ custom_theme.nav_bar_color }};
+        }
+        .custom-theme .nav-bar-links {
+            color: {{ custom_theme.nav_bar_links_color }};
+            text-decoration: none;
+        }
+        .custom-theme .homepage-links {
+            color: {{ custom_theme.homepage_links_color }};
+        }
+        .custom-theme .nav-bar-links:visited {
+            color: {{ custom_theme.nav_bar_link_color }};
+        }
+    </style>
+    {% endif %}
+</head>
+<body {% if current_theme == "Custom" %}class="custom-theme"{% endif %}>
+    <div>
+        <div id="center-div">
+            {% include 'nav.html' %}
+            <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
+                <h2>Create a Custom Theme</h2>
+                <form action="/change_theme" method="post">
+                    <input type="hidden" name="theme" value="Custom">
+                    <label for="background_color">Background Color:</label><br>
+                    <input type="color" id="background_color" name="background_color" value="{{ custom_theme.background_color if custom_theme else '#f6f6ef' }}"><br><br>
+                    
+                    <label for="nav_bar_color">Nav Bar Color:</label><br>
+                    <input type="color" id="nav_bar_color" name="nav_bar_color" value="{{ custom_theme.nav_bar_color if custom_theme else '#ff6600' }}"><br><br>
+                    
+                    <label for="nav_bar_links_color">Nav Bar Links Color:</label><br>
+                    <input type="color" id="nav_bar_links_color" name="nav_bar_links_color" value="{{ custom_theme.nav_bar_links_color if custom_theme else '#000000' }}"><br><br>
+                    
+                    <label for="homepage_links_color">Links Color:</label><br>
+                    <input type="color" id="homepage_links_color" name="homepage_links_color" value="{{ custom_theme.homepage_links_color if custom_theme else '#000000' }}"><br><br>
+                    
+                    <label for="visited_homepage_links_color">Visited Homepage Links Color:</label><br>
+                    <input type="color" id="visited_homepage_links_color" name="visited_homepage_links_color" value="{{ custom_theme.visited_homepage_links_color if custom_theme else '#828282' }}"><br><br>
+                    
+                    <button type="submit">Apply Custom Theme</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
