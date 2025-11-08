@@ -1,7 +1,7 @@
 [project]
-name = "smart-rss"
+name = "hack-club-news"
 version = "0.1.0"
-description = "A simple RSS feed parser with a minimalistic dashboard"
+description = "Hack Club News is a platform like Hacker News for Hack Clubers to share any new and interesting news."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
