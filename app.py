@@ -126,7 +126,8 @@ def add_post():
             "date_published": datetime.utcnow().isoformat(),
             "upvotes": 0,
             "comment_number": 0,
-            "comments": []
+            "comments": [],
+            "upvoted_by": []
         })
 
         with open('data/posts.json', 'w') as f:
@@ -137,7 +138,8 @@ def add_post():
 @app.route("/upvote/<int:item_number>")
 def upvote(item_number):
     items = get_all_items()
-    if 0 <= item_number < len(items):
+    username = request.cookies.get("username")
+    if 0 <= item_number < len(items) and username:
         # this is not a good way to do this, but it's the only way with the current structure
         # I should really be using a database for this
         with open('data/posts.json', 'r') as f:
@@ -145,7 +147,11 @@ def upvote(item_number):
         
         for post in posts:
             if post['title'] == items[item_number]['title']:
-                post['upvotes'] += 1
+                if username not in post.get('upvoted_by', []):
+                    post['upvotes'] += 1
+                    if 'upvoted_by' not in post:
+                        post['upvoted_by'] = []
+                    post['upvoted_by'].append(username)
                 break
         
         with open('data/posts.json', 'w') as f:
@@ -162,7 +168,10 @@ def add_comment(item_number):
         
         for post in posts:
             if post['title'] == items[item_number]['title']:
-                post['comments'].append(request.form.get("comment"))
+                post['comments'].append({
+                    "username": request.cookies.get("username"),
+                    "comment": request.form.get("comment")
+                })
                 post['comment_number'] += 1
                 break
         
@@ -191,6 +200,7 @@ def auth():
                     if user['username'] == username and user['password'] == password:
                         resp = make_response(redirect("/"))
                         resp.set_cookie("logged_in", "true")
+                        resp.set_cookie("username", username)
                         return resp
         except (FileNotFoundError, json.JSONDecodeError):
             pass
@@ -219,7 +229,15 @@ def sign_up():
             
         resp = make_response(redirect("/"))
         resp.set_cookie("logged_in", "true")
+        resp.set_cookie("username", username)
         return resp
+
+@app.route("/logout")
+def logout():
+    resp = make_response(redirect("/"))
+    resp.delete_cookie("logged_in")
+    resp.delete_cookie("username")
+    return resp
 
 
 

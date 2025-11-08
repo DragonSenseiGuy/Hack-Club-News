@@ -3,7 +3,11 @@
         <h2 style="width: 300px; margin: 0;"><a href="/" class="nav-bar-links">Hack Club News</a></h2>
         <div>
             <a href="/settings" style="text-align: right;" class="nav-bar-links">settings</a>
-            <a href="/login" style="text-align: right;" class="nav-bar-links">login</a>
+            {% if request.cookies.get("logged_in") %}
+                <a href="#" style="text-align: right;" class="nav-bar-links">{{ request.cookies.get("username") }}</a>
+            {% else %}
+                <a href="/login" style="text-align: right;" class="nav-bar-links">login</a>
+            {% endif %}
         </div>
     </div>
 </div>

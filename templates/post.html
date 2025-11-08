@@ -50,7 +50,7 @@
                     <br><br>
                     <h2>Comments</h2>
                     {% for comment in item["comments"] %}
-                        <p>{{ comment }}</p>
+                        <p><b>{{ comment.username }}</b>: {{ comment.comment }}</p>
                     {% endfor %}
                 </div>
             </div>
