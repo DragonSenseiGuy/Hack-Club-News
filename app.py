@@ -44,7 +44,7 @@ def get_all_items():
             except json.JSONDecodeError:
                 pass
 
-    all_items.sort(key=lambda item: dateutil.parser.parse(item.get("date_published", "1970-01-01T00:00:00Z")), reverse=True)
+    all_items.sort(key=lambda item: (item.get("upvotes", 0), dateutil.parser.parse(item.get("date_published", "1970-01-01T00:00:00Z"))), reverse=True)
     return all_items
 
 @app.route("/")
