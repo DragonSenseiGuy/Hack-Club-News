@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import dateutil.parser
 import json
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 UPLOAD_FOLDER = 'data' 
 ALLOWED_EXTENSIONS = {'json'}
@@ -34,6 +35,15 @@ def get_all_items():
         json_feed:dict = feed2json(feed_url)
         if "items" in json_feed:
             all_items.extend(json_feed["items"])
+    
+    if os.path.exists('data/posts.json'):
+        with open('data/posts.json', 'r') as f:
+            try:
+                posts = json.load(f)
+                all_items.extend(posts)
+            except json.JSONDecodeError:
+                pass
+
     all_items.sort(key=lambda item: dateutil.parser.parse(item.get("date_published", "1970-01-01T00:00:00Z")), reverse=True)
     return all_items
 
@@ -46,14 +56,14 @@ def home():
     return render_template("home.html", items=items, custom_theme=custom_theme, current_theme=current_theme)
 
 
-@app.route("/blog/<int:item_number>")
-def blog(item_number):
+@app.route("/post/<int:item_number>")
+def post(item_number):
     items = get_all_items()
     custom_theme_cookie = request.cookies.get("custom_theme")
     custom_theme = json.loads(custom_theme_cookie) if custom_theme_cookie else None
     current_theme = request.cookies.get("theme", "Hacker News")
     if 0 <= item_number < len(items):
-        return render_template("blog.html", item=items[item_number], custom_theme=custom_theme, current_theme=current_theme)
+        return render_template("post.html", item=items[item_number], custom_theme=custom_theme, current_theme=current_theme, item_number=item_number)
     return None
 
 
@@ -100,64 +110,118 @@ def clear_custom_theme():
     resp.delete_cookie("custom_theme")
     return resp
 
-@app.route("/add_feed", methods=["POST"])
-def add_feed():
-    feed_url = request.form.get("feed_url")
-    if feed_url:
+@app.route("/add_post", methods=["POST"])
+def add_post():
+    post_title = request.form.get("post_title")
+    post_url = request.form.get("post_url")
+    post_content = request.form.get("post_content")
+    if post_title and post_url and post_content:
+        with open('data/posts.json', 'r') as f:
+            posts = json.load(f)
+        
+        posts.append({
+            "title": post_title,
+            "url": post_url,
+            "content": post_content,
+            "date_published": datetime.utcnow().isoformat(),
+            "upvotes": 0,
+            "comment_number": 0,
+            "comments": []
+        })
+
+        with open('data/posts.json', 'w') as f:
+            json.dump(posts, f, indent=4)
+
+    return redirect("/")
+
+@app.route("/upvote/<int:item_number>")
+def upvote(item_number):
+    items = get_all_items()
+    if 0 <= item_number < len(items):
+        # this is not a good way to do this, but it's the only way with the current structure
+        # I should really be using a database for this
+        with open('data/posts.json', 'r') as f:
+            posts = json.load(f)
+        
+        for post in posts:
+            if post['title'] == items[item_number]['title']:
+                post['upvotes'] += 1
+                break
+        
+        with open('data/posts.json', 'w') as f:
+            json.dump(posts, f, indent=4)
+
+    return redirect("/")
+
+@app.route("/add_comment/<int:item_number>", methods=["POST"])
+def add_comment(item_number):
+    items = get_all_items()
+    if 0 <= item_number < len(items):
+        with open('data/posts.json', 'r') as f:
+            posts = json.load(f)
+        
+        for post in posts:
+            if post['title'] == items[item_number]['title']:
+                post['comments'].append(request.form.get("comment"))
+                post['comment_number'] += 1
+                break
+        
+        with open('data/posts.json', 'w') as f:
+            json.dump(posts, f, indent=4)
+
+    return redirect(f"/post/{item_number}")
+
+@app.route("/newpost")
+def newpost():
+    return render_template("newpost.html")
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+@app.route("/auth", methods=["POST"])
+def auth():
+    username = request.form.get("username")
+    password = request.form.get("password")
+    if username and password:
         try:
-            with open('data/feeds.json', 'r') as f:
-                data = json.load(f)
+            with open('data/users.json', 'r') as f:
+                users = json.load(f)
+                for user in users:
+                    if user['username'] == username and user['password'] == password:
+                        resp = make_response(redirect("/"))
+                        resp.set_cookie("logged_in", "true")
+                        return resp
         except (FileNotFoundError, json.JSONDecodeError):
-            data = {'urls': []}
+            pass
+    return redirect("/login")
 
-        if feed_url not in data['urls']:
-            data['urls'].append(feed_url)
+@app.route("/sign_up", methods=["POST"])
+def sign_up():
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    if username and email and password:
+        try:
+            with open('data/users.json', 'r') as f:
+                users = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            users = []
+        
+        users.append({
+            "username": username,
+            "email": email,
+            "password": password
+        })
 
-        with open('data/feeds.json', 'w') as f:
-            json.dump(data, f, indent=4)
+        with open('data/users.json', 'w') as f:
+            json.dump(users, f, indent=4)
             
-    return redirect("/settings")
+        resp = make_response(redirect("/"))
+        resp.set_cookie("logged_in", "true")
+        return resp
 
-@app.route("/remove_feed", methods=["POST"])
-def remove_feed():
-    feed_url = request.form.get("feed_url")
-    if feed_url:
-        try:
-            with open('data/feeds.json', 'r') as f:
-                data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            data = {'urls': []}
 
-        if 'urls' in data and feed_url in data['urls']:
-            data['urls'].remove(feed_url)
-
-        with open('data/feeds.json', 'w') as f:
-            json.dump(data, f, indent=4)
-
-    return redirect("/settings")
-
-@app.route("/upload", methods=["POST"])
-def upload():
-    if "file" not in request.files:
-        return "No file part in the request", 400
-    
-    file = request.files["file"]
-
-    if file.filename == "":
-        return "No selected file", 400
-    
-    if file :
-        filename = secure_filename("feeds.json")
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-        return redirect("/")
-    
-@app.route("/export_json")
-def export_json():
-    return send_from_directory(
-        directory=JSON_DIR, 
-        path=JSON_FILENAME, 
-        as_attachment=True
-    )
 
 if __name__=="__main__":
     app.run()

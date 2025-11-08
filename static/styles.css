@@ -50,3 +50,8 @@ img {
 a {
     color: black;
 }
+
+.info-homepage {
+    color: grey;
+    font-size: 12px;
+}

@@ -6,12 +6,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
-    <title>Smart RSS</title>
+    <title>Hack Club News</title>
     {% if current_theme == "Custom" %}
     <style>
         .custom-theme #center-div {
             background-color: {{ custom_theme.background_color }};
-            color: {{ custom_theme.text_color }};
+            color: {{ custom_theme.text_color }}
         }
         .custom-theme #nav-bar {
             background-color: {{ custom_theme.nav_bar_color }};
@@ -23,6 +23,15 @@
         .custom-theme .homepage-links {
             color: {{ custom_theme.homepage_links_color }};
         }
+        .custom-theme .nav-bar-links:visited {
+            color: {{ custom_theme.nav_bar_link_color }};
+        }
+        .custom-theme .homepage-links:visited {
+            color: {{ custom_theme.visited_homepage_links_color }};
+        }
+        .custom-theme .info-homepage {
+            color: {{ custom_theme.visited_homepage_links_color }};
+        }
     </style>
     {% endif %}
 </head>
@@ -31,10 +40,25 @@
         <div id="center-div">
             {% include 'nav.html' %}
             <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
-                <h1 style="padding-left: 20px;">{{ item["title"] }} <a href={{ item["url"] }}><img src="/static/img/new-tab.svg"></img></a></h1>
-                {{ item["summary"] | safe }}
+                Login
+                <form action="/auth" method="post">
+                    <br />
+                    <input name="username" placeholder="Username"> <br /> <br />
+                    <input name="password" placeholder="Password" type="password"> <br /> <br />
+                    <button>Login</button>
+                </form>
+                <br />
+                Sign Up
+                <form action="/sign_up" method="post">
+                    <br />
+                    <input name="username" placeholder="Username"> <br /> <br />
+                    <input name="email" placeholder="Email"> <br /> <br />
+                    <input name="password" placeholder="Password" type="password"> <br /> <br />
+                    <button>Sign Up</button>
+                </form>
             </div>
         </div>
     </div>
+
 </body>
 </html>

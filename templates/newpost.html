@@ -29,9 +29,6 @@
         .custom-theme .homepage-links:visited {
             color: {{ custom_theme.visited_homepage_links_color }};
         }
-        .custom-theme .info-homepage {
-            color: {{ custom_theme.visited_homepage_links_color }};
-        }
     </style>
     {% endif %}
 </head>
@@ -40,22 +37,13 @@
         <div id="center-div">
             {% include 'nav.html' %}
             <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
-                {% for item in items %}
-                    <div style="padding:5px">
-                        <a href="/upvote/{{ loop.index0 }}"><svg height="16" viewbox="0 0 32 16" width="16" xlms="http://www.w3.org/2000/svg"><path xmlns="http://www.w3.org/2000/svg" d="m2 27 14-29 14 29z" fill="#999"/></svg></a>
-                        <a class="homepage-links" href="/post/{{ loop.index0 }}" style="padding-left: 1px;">{{ item["title"] }}</a> 
-                        (<a class="homepage-links" href={{ item["url"] }}>{{ item["url"].split('/')[2] }}</a>)
-                        <br />
-                        <div style="padding-left:25px;" class="info-homepage">
-                            {% if item["upvotes"] is defined %}
-                                <span>{{ item["upvotes"] }} upvotes</span>
-                            {% endif %}
-                            {% if item["comment_number"] is defined %}
-                                <span> | {{ item["comment_number"] }} comments</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+                Make a new post:
+                <form action="/add_post" method="post">
+                    <input name="post_title" placeholder="Post Title"> <br /> <br />
+                    <input name="post_url" placeholder="Post URL"> <br /> <br />
+                    <textarea name="post_content" placeholder="Post Content" rows="5" cols="100"></textarea> <br /> <br />
+                    <button>Post</button>
+                </form>
             </div>
         </div>
     </div>

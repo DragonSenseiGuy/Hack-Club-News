@@ -262,7 +262,7 @@ wheels = [
 ]
 
 [[package]]
-name = "smart-rss"
+name = "hack-club-news"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

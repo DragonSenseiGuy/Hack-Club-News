@@ -23,9 +23,6 @@
         .custom-theme .homepage-links {
             color: {{ custom_theme.homepage_links_color }};
         }
-        .custom-theme .nav-bar-links:visited {
-            color: {{ custom_theme.nav_bar_link_color }};
-        }
     </style>
     {% endif %}
 </head>
@@ -34,27 +31,30 @@
         <div id="center-div">
             {% include 'nav.html' %}
             <div style="background-color: #f6f6ef; overflow: auto; padding-left: 20px; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
-                <a href="/newpost">Make a new post</a>
-                <br />
-                <div style="background-color: #f6f6ef; overflow: auto; padding-right: 20px; padding-bottom: 20px; padding-top: 5px;">
-                <br />
-                Themes:
-                <form action="/change_theme" method="post">
-                    <input type="radio" id="default" name="theme" value="Hacker News" {% if current_theme == "Hacker News" %}checked{% endif %}>
-                    <label for="default">Hacker News</label><br>
-                    <button type="submit">Apply Theme</button>
-                </form>
-                <br />
-                <a href="/custom_theme">Create a Custom Theme</a>
-                <br />
-                <br />
-                <form action="/clear_custom_theme" method="post">
-                    <button type="submit">Clear Custom Theme</button>
-                </form>
-                <br />
+                <h1 style="padding-left: 20px;">{{ item["title"] }} <a href={{ item["url"] }}><img src="/static/img/new-tab.svg"></img></a></h1>
+                <div style="padding:20px; padding-top:0px;">
+                    <p>{{ item["upvotes"] }} upvotes</p>
+                    {% if item["summary"] %}
+                        {{ item["summary"] | safe }}
+                    {% else %}
+                        {{ item["content"] | safe }}
+                    {% endif %}
+
+                    <br><br>
+                    <form action="/add_comment/{{ item_number }}" method="post">
+                        <textarea name="comment" rows="5" cols="100"></textarea>
+                        <br>
+                        <button>Add Comment</button>
+                    </form>
+
+                    <br><br>
+                    <h2>Comments</h2>
+                    {% for comment in item["comments"] %}
+                        <p>{{ comment }}</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
-
 </body>
 </html>
