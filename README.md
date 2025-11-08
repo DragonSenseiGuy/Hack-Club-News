@@ -1,6 +1,6 @@
 # Hack Club News
 
-Hack Club News is a platform like [Hacker News](https://news.ycombinator.com/) for Hack Clubers to share any new and interesting news.
+Hack Club News is a platform like [Hacker News](https://news.ycombinator.com/) for Hack Clubbers to share any new and interesting news.
 
 ## Features
 
