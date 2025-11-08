@@ -1,10 +1,9 @@
-from flask import Flask, render_template, request, redirect, make_response, send_from_directory
+from flask import Flask, render_template, request, redirect, make_response
 from feed2json import feed2json
 import os #noqa: F401
 from dotenv import load_dotenv
 import dateutil.parser
 import json
-from werkzeug.utils import secure_filename
 from datetime import datetime
 
 UPLOAD_FOLDER = 'data' 
